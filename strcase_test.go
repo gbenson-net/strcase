@@ -59,3 +59,28 @@ func TestSnakeCaseMemTotal(t *testing.T) {
 		assert.Check(t, actual == tc.Expect, msg)
 	}
 }
+
+func TestSnakeCaseActiveAnon(t *testing.T) {
+	s := "Active(anon)"
+
+	for _, tc := range []struct {
+		Func   func(string) string
+		Expect string
+	}{
+		{ToSnake, "active_anon"},
+		{ToScreamingSnake, "ACTIVE_ANON"},
+		{ToKebab, "active-anon"},
+		{ToScreamingKebab, "ACTIVE-ANON"},
+		{ToCamel, "ActiveAnon"},
+		{ToLowerCamel, "activeAnon"},
+	} {
+		name := runtime.FuncForPC(reflect.ValueOf(tc.Func).Pointer()).Name()
+		dot := strings.LastIndex(name, ".")
+		assert.Assert(t, dot >= 0)
+		name = name[dot+1:]
+
+		actual := tc.Func(s)
+		msg := fmt.Sprintf("%s: %q", name, actual)
+		assert.Check(t, actual == tc.Expect, msg)
+	}
+}

@@ -7,10 +7,14 @@ import (
 	"github.com/iancoleman/strcase"
 )
 
-var freqRx = regexp.MustCompile(`\b([a-z]) hz\b`)
+var (
+	nonwordRx = regexp.MustCompile(`[[:^alnum:]]+`)
+	freqRx    = regexp.MustCompile(`\b([a-z]) hz\b`)
+)
 
 // pp preprocesses a string we'll convert using strcase.
 func pp(s string) string {
+	s = nonwordRx.ReplaceAllLiteralString(s, " ")
 	s = strcase.ToDelimited(s, ' ')
 	s = freqRx.ReplaceAllString(s, "${1}hz")
 	return s
